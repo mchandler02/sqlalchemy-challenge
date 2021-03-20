@@ -37,21 +37,42 @@ def precipitation():
     session = Session(engine)
     precip = session.query(Measurements.date, Measurements.prcp).all()
     session.close()
-    precip_measurements = []
+    precip_measurements = {}
     for date, prcp in precip:
-        precip_dict = {}
-        precip_dict[date] = prcp
-        #precip_dict['Precipitation'] = prcp
-        precip_measurements.append(precip_dict)
+        precip_measurements[date]=prcp
     return jsonify(precip_measurements)
 
 
-# #Stations Page
-# @app.route('/api/v1.0/stations')
+#Stations Page
+@app.route('/api/v1.0/stations')
+def stations():
+    session = Session(engine)
+    stations = session.query(Stations.station, Stations.name, Stations.latitude, Stations.longitude, Stations.elevation).all()
+    session.close()
+    station_info = []
+    for station, name, lat, lng, elevation in stations:
+        station_dict = {}
+        station_dict['station'] = station
+        station_dict['name'] = name
+        station_dict['latitude'] = lat
+        station_dict['longitude'] = lng
+        station_dict['elevation'] = elevation
+        station_info.append(station_dict)
+    return jsonify(station_info)
 
-
-# #TempObs Page
-# @app.route('/api/v1.0/tobs')
+#TempObs Page
+@app.route('/api/v1.0/tobs')
+def tobs():
+    session = Session(engine)
+    tobs = session.query(Measurements.tobs, Measurements.date).filter(Measurements.station == 'USC00519523').all()
+    session.close()
+    tobs_info = []
+    for temp, date in tobs:
+        temp_dict = {}
+        temp_dict['temperature'] = temp
+        temp_dict['date'] = date
+        tobs_info.append(temp_dict)
+    return jsonify(tobs_info)
 
 
 # #Start Page
